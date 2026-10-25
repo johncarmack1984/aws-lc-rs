@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   cargo-zigbuild:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: cargo-zigbuild (${{ matrix.host }}, ${{ matrix.target }})
     runs-on: ${{ matrix.host }}
     strategy:

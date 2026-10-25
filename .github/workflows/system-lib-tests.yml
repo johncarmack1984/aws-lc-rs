@@ -33,7 +33,7 @@ jobs:
   #              bindings to consume.
   # ---------------------------------------------------------------------------
   build-aws-lc-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Build AWS-LC (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -133,7 +133,7 @@ jobs:
           retention-days: 1
 
   build-aws-lc-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Build AWS-LC (windows-latest)
     runs-on: windows-latest
     steps:
@@ -222,7 +222,7 @@ jobs:
   # one specific linking configuration.
   # ---------------------------------------------------------------------------
   test-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: build-aws-lc-unix
     name: "Test: ${{ matrix.config.name }} (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
@@ -316,7 +316,7 @@ jobs:
   # reuses the same OUT_DIR, which holds the previously copied bindings.
   # ---------------------------------------------------------------------------
   test-readonly-install-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: build-aws-lc-unix
     name: "Test: read-only install, repeated builds (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
@@ -381,7 +381,7 @@ jobs:
   # script's attribute-clearing branch (dead code on Unix).
   # ---------------------------------------------------------------------------
   test-readonly-install-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: build-aws-lc-windows
     name: "Test: read-only install, repeated builds (windows-latest)"
     runs-on: windows-latest
@@ -453,7 +453,7 @@ jobs:
   # the constant cannot drift apart.
   # ---------------------------------------------------------------------------
   test-minimum-version:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: "Test: declared minimum AWS-LC version (${{ matrix.floor.name }})"
     runs-on: ubuntu-latest
     strategy:
@@ -558,7 +558,7 @@ jobs:
           grep -q 'required by the `unstable` feature' unstable.log
 
   test-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: build-aws-lc-windows
     name: "Test: ${{ matrix.config.name }} (windows-latest)"
     runs-on: windows-latest
@@ -647,7 +647,7 @@ jobs:
   # static variant builds aws-lc-sys.
   # ---------------------------------------------------------------------------
   test-autodetect-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: build-aws-lc-windows
     name: "Autodetect: OPENSSL_DIR, ${{ matrix.config.name }} (windows-latest)"
     runs-on: windows-latest
@@ -711,7 +711,7 @@ jobs:
   # source build -- it hard-fails here.
   # ---------------------------------------------------------------------------
   test-autodetect-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: build-aws-lc-unix
     name: "Autodetect: ${{ matrix.config.name }} (${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
@@ -814,7 +814,7 @@ jobs:
   # pkg-config. LD_LIBRARY_PATH lets the test binary find the .so at runtime.
   # ---------------------------------------------------------------------------
   test-autodetect-shared-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: build-aws-lc-unix
     name: "Autodetect: pkg-config, shared + run (ubuntu-latest)"
     runs-on: ubuntu-latest
@@ -870,7 +870,7 @@ jobs:
   # rather than falling back to a source build.
   # ---------------------------------------------------------------------------
   test-autodetect-require-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: "Autodetect: USE_SYSTEM=1 requires an install"
     runs-on: ubuntu-latest
     steps:

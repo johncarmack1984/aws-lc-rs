@@ -24,7 +24,7 @@ permissions:
 jobs:
 
   aws-lc-rs-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs tests
     runs-on: ${{ matrix.os }}
     strategy:
@@ -73,7 +73,7 @@ jobs:
   # archive becomes a link error. The two settings together provide a
   # generic guarantee that every internal symbol reference resolves.
   aws-lc-sys-link-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-sys link tests (${{ matrix.os }} / cmake=${{ matrix.cmake }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -100,7 +100,7 @@ jobs:
         run: cargo test -p aws-lc-sys --tests
 
   bindgen-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs bindgen-tests
     runs-on: ${{ matrix.os }}
     strategy:
@@ -129,7 +129,7 @@ jobs:
         run: cargo test ${{ matrix.args }}
 
   windows-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs windows-tests
     runs-on: ${{ matrix.os }}
     strategy:
@@ -194,7 +194,7 @@ jobs:
           fail_ci_if_error: true
 
   aws-lc-rs-asan:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs asan
     strategy:
       matrix:
@@ -222,7 +222,7 @@ jobs:
         run: cargo test ${{ matrix.args }} --lib --bins --tests --examples --target x86_64-unknown-linux-gnu --features asan
 
   aws-lc-rs-msan:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs msan
     strategy:
       fail-fast: false
@@ -252,7 +252,7 @@ jobs:
         run: cargo test -Zbuild-std ${{ matrix.args }} --lib --bins --tests --examples --target x86_64-unknown-linux-gnu ${{ matrix.features }}
 
   aws-lc-rs-tsan:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs tsan
     strategy:
       fail-fast: false
@@ -282,7 +282,7 @@ jobs:
         run: cargo test -Zbuild-std ${{ matrix.args }} --lib --bins --tests --examples --target x86_64-unknown-linux-gnu ${{ matrix.features }}
 
   build-env-static-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs build-env-static-test
     runs-on: ${{ matrix.os }}
     env:
@@ -306,7 +306,7 @@ jobs:
         run: cargo test -p aws-lc-rs --tests
 
   build-prebuild-nasm-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: prebuilt-nasm usage
     runs-on: windows-latest
     strategy:
@@ -344,7 +344,7 @@ jobs:
         run: AWS_LC_SYS_PREBUILT_NASM=1 cargo test --tests -p aws-lc-rs --release --no-default-features --features aws-lc-sys
 
   disable-prebuilt-nasm-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: disable-prebuilt-nasm
     runs-on: windows-latest
     strategy:
@@ -386,7 +386,7 @@ jobs:
           fi
 
   build-env-nasm-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: prebuilt NASM verification
     runs-on: windows-latest
     strategy:
@@ -423,7 +423,7 @@ jobs:
           git diff --cached --exit-code HEAD -- aws-lc-sys/builder/prebuilt-nasm/*.txt
 
   build-clang-cl-discovery-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: clang-cl discovery via vswhere
     runs-on: windows-11-arm
     steps:
@@ -461,7 +461,7 @@ jobs:
           cargo build -p aws-lc-sys --target aarch64-pc-windows-msvc
 
   build-env-external-bindgen-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs - External bindgen test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     env:
@@ -488,7 +488,7 @@ jobs:
         run: cargo test --tests -p aws-lc-rs --no-default-features --features aws-lc-sys
 
   build-env-external-bindgen-windows-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs - External bindgen test (${{ matrix.target }})
     runs-on: windows-latest
     env:
@@ -522,7 +522,7 @@ jobs:
         run: cargo test --tests -p aws-lc-rs --no-default-features --features aws-lc-sys --target ${{ matrix.target }}
 
   build-env-fips-static-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs build-env-fips-static-test
     runs-on: ${{ matrix.os }}
     env:
@@ -553,7 +553,7 @@ jobs:
         run: cargo test -p aws-lc-rs --no-default-features --features fips
 
   build-env-no-asm-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: build-env-no-asm-test
     runs-on: ${{ matrix.os }}
     env:
@@ -591,7 +591,7 @@ jobs:
           }
 
   build-env-fips-no-asm-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs build-env-fips-no-asm-test
     runs-on: ${{ matrix.os }}
     env:
@@ -633,7 +633,7 @@ jobs:
           }
 
   build-env-fips-external-bindgen-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs FIPS - External bindgen test
     runs-on: ${{ matrix.os }}
     env:
@@ -667,7 +667,7 @@ jobs:
         run: cargo test --tests -p aws-lc-rs --no-default-features --features fips
 
   careful:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Run carefully
     runs-on: ${{ matrix.os }}
     strategy:
@@ -705,7 +705,7 @@ jobs:
         run: cargo careful test --tests --features fips,bindgen
 
   clang-19-bindgen:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Clang 19.1 + bindgen tests
     runs-on: macos-latest
     env:
@@ -734,7 +734,7 @@ jobs:
         run: cargo test --features bindgen
 
   source-path-has-spaces:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name:
       "Spaces in path - ${{ matrix.os }} - FIPS: ${{ matrix.fips }}"
     runs-on: ${{ matrix.os }}
@@ -771,7 +771,7 @@ jobs:
         run: cargo test --tests --release -p aws-lc-rs --no-default-features --features ${{ (matrix.fips == 1 && 'fips') || 'aws-lc-sys' }}
 
   cmake-source-path-has-spaces:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name:
       "Spaces in path (CMake) - ${{ matrix.os }} - pregen-src: ${{ matrix.pregen_src }}"
     runs-on: ${{ matrix.os }}
@@ -819,7 +819,7 @@ jobs:
         run: cargo test --release --tests -p aws-lc-rs --features bindgen
 
   hostile-environment:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Hostile environment - ${{ matrix.env_name }}=${{ matrix.env_value }}
     strategy:
       fail-fast: false
@@ -856,7 +856,7 @@ jobs:
           env "${{ matrix.env_name }}=${{ matrix.env_value }}" cargo test -p aws-lc-rs --all-targets --features fips
 
   builder-tests:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     # The builder normally compiles only as a build script, so its unit tests run
     # through the builder-test harness. The bindgen feature adds the generator
     # tests, which need libclang. The compiler-probe tests only run on Linux.
@@ -919,7 +919,7 @@ jobs:
           cargo test --locked -p builder-test test_crate_cc_reaches_main_builder
 
   linux-clang-lto:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     # Guards https://github.com/aws/aws-lc-rs/issues/1211: under `-flto`, clang flag
     # probes never reach the integrated assembler, so `-Wa,--debug-prefix-map` probed
     # as supported and `.S` sources failed to assemble. No other lane combined clang,
@@ -947,7 +947,7 @@ jobs:
         run: cargo build -p aws-lc-sys --release
 
   linux-clang-path-stripping:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     # Clang no longer gets `-Wa,--debug-prefix-map`, so `-ffile-prefix-map` alone must
     # strip `.S` paths (compilers.yml asserts this for GCC only). cc builder only: the
     # C-side prefix-map never reaches `CMAKE_ASM_FLAGS`. No LTO: bitcode has no DWARF.
@@ -991,7 +991,7 @@ jobs:
           fi
 
   windows-hostile-environment:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Windows hostile env - CC=${{ matrix.cc }} CFLAGS=${{ matrix.cflags }}
     strategy:
       fail-fast: false
@@ -1030,7 +1030,7 @@ jobs:
           cargo test -p aws-lc-rs --tests
 
   windows-clang-cl:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     # Explicit clang-cl baseline for the cl-driver-mode side of #1146.
     name: Windows clang-cl - ${{ matrix.target }}
     strategy:
@@ -1059,7 +1059,7 @@ jobs:
           cargo test -p aws-lc-rs --target ${{ matrix.target }}
 
   hardened-environment:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Hardened environment
     strategy:
       fail-fast: false
@@ -1087,7 +1087,7 @@ jobs:
         run: cargo test -p aws-lc-rs --all-targets
 
   rpmbuild-hardened-environment:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     # Reproduces the default Fedora/RHEL `rpmbuild` environment: %build exports
     # CFLAGS/CXXFLAGS/LDFLAGS from the redhat-rpm-config macros evaluated below.
     # These split PIE hardening across CFLAGS (-fPIE) and LDFLAGS (-pie), which
@@ -1127,7 +1127,7 @@ jobs:
           cargo test -p aws-lc-rs --all-targets
 
   memcmp-bug-detection:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     # Asserts the memcmp probe's detection path end-to-end using GCC releases that
     # actually contain GCC bug 95189: the probe must build, run, detect the
     # miscompilation, and fail the build. All other CI jobs use fixed compilers,
@@ -1168,7 +1168,7 @@ jobs:
           '
 
   symlinked-includes:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Symlinked includes
     runs-on: ubuntu-latest
     steps:
@@ -1199,7 +1199,7 @@ jobs:
         run: cargo test --tests -p aws-lc-rs --no-default-features --features aws-lc-sys
 
   symlinked-manifest-dir-reproducibility:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     # cc-rs hashes each source's dirname into its object name after stripping the raw
     # CARGO_MANIFEST_DIR. If the builder passes symlink-resolved paths, the strip misses
     # and the absolute build path is hashed into archive member names, so the library
@@ -1246,7 +1246,7 @@ jobs:
           fi
 
   cranelift-backend-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs cranelift-backend-test (${{ matrix.target }})
     runs-on: ${{ matrix.os }}
     env:
@@ -1285,7 +1285,7 @@ jobs:
   # Pregenerated bindings are only refreshed with AWS-LC updates, so also verify
   # that freshly generated bindings link under Cranelift.
   cranelift-bindgen-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs cranelift-bindgen-test (${{ matrix.target }})
     runs-on: ${{ matrix.os }}
     env:

@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   cmake:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: CMake ${{ matrix.cmake.version}} build with ${{ matrix.generator}}
     strategy:
       fail-fast: false

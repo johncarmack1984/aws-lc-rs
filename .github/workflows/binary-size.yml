@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   binary-size-check:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Binary size reduction (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -114,7 +114,7 @@ jobs:
           echo "PASS: ${reduction}% reduction meets the ${EXPECTED_REDUCTION_PERCENT}% threshold"
 
   small-tests:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Test suite with opt-level=z (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:

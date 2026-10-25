@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   s2n-quic-integration:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: s2n-quic-integration
     runs-on: ${{ matrix.os }}
     strategy:
@@ -46,7 +46,7 @@ jobs:
           ./scripts/run-s2n-quic-integration.sh
 
   rustls-integration:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: rustls-integration
     runs-on: ${{ matrix.os }}
     strategy:
@@ -70,7 +70,7 @@ jobs:
           ./scripts/run-rustls-integration.sh ${{ matrix.latest == 1 && '--latest-release' }} --cleanup
 
   windows-debug-crt-static-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: "Windows debug ${{ matrix.cli }} w/ crt-static Test"
     runs-on: windows-latest
     strategy:
@@ -94,7 +94,7 @@ jobs:
           ./scripts/run-windows-debug-crt-static-test.sh ${{ matrix.cli }}
 
   ssl-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: "SSL Test"
     runs-on: ${{ matrix.os }}
     strategy:
@@ -125,7 +125,7 @@ jobs:
         run: cargo package --features ssl
 
   links-crate-tests:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: sys crate tests
     runs-on: ${{ matrix.os }}
     env:
@@ -211,7 +211,7 @@ jobs:
         run: cargo run --features ${{ matrix.features }} --no-default-features ${{ matrix.target && format('--target {0}', matrix.target) || '' }}
 
   publish-dry-run-version-check:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: publish dry-run version check
     runs-on: ubuntu-latest
     outputs:
@@ -252,7 +252,7 @@ jobs:
           fi
 
   publish-dry-run-sys-crates:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: publish dry-run (sys crates)
     runs-on: ${{ matrix.os }}
     strategy:
@@ -293,7 +293,7 @@ jobs:
         run: cargo publish --dry-run
 
   publish-dry-run-main-crate:
-    if: github.repository_owner == 'aws' && needs.publish-dry-run-version-check.outputs.skip-aws-lc-rs != 'true'
+    if: github.repository_owner == 'johncarmack1984' && needs.publish-dry-run-version-check.outputs.skip-aws-lc-rs != 'true'
     name: publish dry-run (aws-lc-rs)
     needs: publish-dry-run-version-check
     runs-on: ${{ matrix.os }}
@@ -335,7 +335,7 @@ jobs:
 
   ## Verify that prebuilt-nasm objects were published properly
   publish-dry-run-prebuild-nasm:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: publish dry-run prebuilt-nasm
     runs-on: windows-latest
     strategy:
@@ -370,7 +370,7 @@ jobs:
 
   msrv:
     name: Minimum Supported Rust Version
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

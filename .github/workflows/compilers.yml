@@ -37,7 +37,7 @@ permissions:
 jobs:
 
   aws-lc-rs-2004-gcc:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: x86-64 - GCC ${{ matrix.gcc_version }} - CMake ${{ matrix.cmake }} - FIPS ${{ matrix.fips }}
     runs-on: ubuntu-24.04
     container:
@@ -142,7 +142,7 @@ jobs:
           fi
 
   aws-lc-rs-2004-arm-gcc:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: arm64 - GCC ${{ matrix.gcc_version }} - CMake ${{ matrix.cmake }} - FIPS ${{ matrix.fips }}
     runs-on: ubuntu-24.04-arm
     container:
@@ -247,7 +247,7 @@ jobs:
           fi
 
   aws-lc-rs-1804-gcc:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: x86-64 - GCC ${{ matrix.gcc_version }} - CMake ${{ matrix.cmake }} - FIPS ${{ matrix.fips }}
     runs-on: ubuntu-24.04
     container:
@@ -306,7 +306,7 @@ jobs:
         run: cargo test -p aws-lc-rs --release --all-targets --no-default-features --features ${{ (matrix.fips == '0' && 'unstable,aws-lc-sys') || 'unstable,fips' }}
 
   aws-lc-rs-1804-arm-gcc:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: arm64 - GCC ${{ matrix.gcc_version }} - CMake ${{ matrix.cmake }} - FIPS ${{ matrix.fips }}
     runs-on: ubuntu-24.04-arm
     container:
@@ -364,7 +364,7 @@ jobs:
         run: cargo test -p aws-lc-rs --release --all-targets --no-default-features --features ${{ (matrix.fips == '0' && 'unstable,aws-lc-sys') || 'unstable,fips' }}
 
   aws-lc-rs-c-std-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: C-std ${{ matrix.os }} - ${{ matrix.c_std }} - Force CMake ${{ matrix.cmake }}
     runs-on: ${{ matrix.os }}
     env:

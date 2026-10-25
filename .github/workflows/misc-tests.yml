@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   copyright:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -22,7 +22,7 @@ jobs:
           ./scripts/tools/copyright_check.sh
 
   assert-license-statement-in-pr-description:
-    if: github.repository_owner == 'aws' && github.event_name == 'pull_request'
+    if: github.repository_owner == 'johncarmack1984' && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
@@ -77,7 +77,7 @@ jobs:
           fi
 
   verify-docsrs-build:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -109,7 +109,7 @@ jobs:
         run: chmod -R u+w aws-lc-rs aws-lc-sys aws-lc-fips-sys || true
 
   dev-tests-only-feature:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: dev-tests-only feature tests
     runs-on: ubuntu-latest
     steps:

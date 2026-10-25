@@ -37,7 +37,7 @@ jobs:
   # slashes, so it can go in artifact names).
   # ---------------------------------------------------------------------------
   setup:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     outputs:
       refs: ${{ steps.refs.outputs.refs }}
@@ -49,7 +49,7 @@ jobs:
   # install prefixes the test jobs consume via workflow artifacts.
   # ---------------------------------------------------------------------------
   build-fips-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: setup
     name: Build AWS-LC FIPS (${{ matrix.aws_lc_ref }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -170,7 +170,7 @@ jobs:
           retention-days: 1
 
   build-fips-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: setup
     name: Build AWS-LC FIPS (${{ matrix.aws_lc_ref }}, windows-latest)
     runs-on: windows-latest
@@ -246,7 +246,7 @@ jobs:
   # assert both the system-library path and FIPS verification ran.
   # ---------------------------------------------------------------------------
   test-fips-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: [setup, build-fips-unix]
     name: "Test: ${{ matrix.config.name }} (${{ matrix.aws_lc_ref }}, ${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
@@ -338,7 +338,7 @@ jobs:
   # pin.
   # ---------------------------------------------------------------------------
   test-fips-minimum-version:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: "Test: declared minimum AWS-LC FIPS version"
     runs-on: ubuntu-latest
     env:
@@ -414,7 +414,7 @@ jobs:
   # that the FIPS probe resolves the renamed FIPS-only symbol.
   # ---------------------------------------------------------------------------
   test-fips-prefixed-linux:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: [setup, build-fips-unix]
     name: "Test: ${{ matrix.config.name }} (${{ matrix.aws_lc_ref }}, ubuntu-latest)"
     runs-on: ubuntu-latest
@@ -487,7 +487,7 @@ jobs:
         run: bash scripts/tests/test_system_lib_fips_link.sh "$GITHUB_WORKSPACE/fips-artifacts/install-fips-prefixed"
 
   test-fips-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: [setup, build-fips-windows]
     name: "Test: ${{ matrix.config.name }} (${{ matrix.aws_lc_ref }}, windows-latest)"
     runs-on: windows-latest
@@ -557,7 +557,7 @@ jobs:
   # AWS_LC_FIPS_SYS_STATIC.
   # ---------------------------------------------------------------------------
   test-autodetect-fips-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: [setup, build-fips-windows]
     name: "Autodetect (FIPS): OPENSSL_DIR (${{ matrix.aws_lc_ref }}, windows-latest)"
     runs-on: windows-latest
@@ -615,7 +615,7 @@ jobs:
   # link probe (proving the probe is not trivially satisfied).
   # ---------------------------------------------------------------------------
   reject-nonfips-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: [setup, build-fips-unix]
     name: "Reject non-FIPS install (${{ matrix.aws_lc_ref }}, ${{ matrix.os }})"
     runs-on: ${{ matrix.os }}
@@ -663,7 +663,7 @@ jobs:
           fi
 
   reject-nonfips-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: [setup, build-fips-windows]
     name: "Reject non-FIPS install (${{ matrix.aws_lc_ref }}, windows-latest)"
     runs-on: windows-latest
@@ -728,7 +728,7 @@ jobs:
   # silently falling back to a source build.
   # ---------------------------------------------------------------------------
   test-autodetect-fips-unix:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     needs: [setup, build-fips-unix]
     name: "Autodetect (FIPS): ${{ matrix.config.name }} (${{ matrix.aws_lc_ref }}, ${{ matrix.os }})"
     runs-on: ${{ matrix.os }}

@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   fips-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs fips-tests
     runs-on: ${{ matrix.os }}
     env:
@@ -67,7 +67,7 @@ jobs:
         working-directory: ./aws-lc-rs
         run: cargo test ${{ matrix.args }}
   windows-fips-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: aws-lc-rs windows-fips-tests
     runs-on: ${{ matrix.os }}
     strategy:
@@ -97,7 +97,7 @@ jobs:
         working-directory: ./aws-lc-rs
         run: cargo test ${{ matrix.args }}
   cpu-jitter-entropy-test:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: CPU Jitter Entropy Tests
     runs-on: ubuntu-latest
     env:

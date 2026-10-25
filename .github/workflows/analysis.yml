@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   rustfmt:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -39,7 +39,7 @@ jobs:
         run: cargo fmt -- --check --verbose
 
   clippy:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -69,7 +69,7 @@ jobs:
   # as a plain lib, so this lints that code without building AWS-LC. `--lib`
   # skips the builder's test modules, which have pre-existing findings.
   clippy-builder-windows:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
@@ -81,7 +81,7 @@ jobs:
         run: cargo clippy -p builder-test --lib -- -W clippy::all -W clippy::pedantic -D warnings
 
   apidiff:
-    if: github.repository_owner == 'aws' && github.event_name == 'pull_request'
+    if: github.repository_owner == 'johncarmack1984' && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env:
       AWS_LC_SYS_CMAKE_BUILDER: 1
@@ -118,7 +118,7 @@ jobs:
           cargo public-api diff --deny changed --deny removed "${CRATE_VERSION}"
 
   dependency-review:
-    if: github.repository_owner == 'aws' && github.event_name == 'pull_request'
+    if: github.repository_owner == 'johncarmack1984' && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
@@ -131,7 +131,7 @@ jobs:
           allow-licenses: Apache-2.0, ISC, MIT, MIT-0
 
   udeps:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -153,7 +153,7 @@ jobs:
           RUSTC_WRAPPER: ""
 
   bindgen-dependency:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -185,7 +185,7 @@ jobs:
           }
 
   minimal-versions:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Resolve the dependencies to the minimum SemVer version
     runs-on: ubuntu-latest
     strategy:
@@ -208,7 +208,7 @@ jobs:
         run: cargo --locked check
 
   semver-checks:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -227,7 +227,7 @@ jobs:
           feature-group: only-explicit-features
           features: fips
   metadata-checks:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     runs-on: ubuntu-latest
     steps:
       - name: Install Rust toolchain
@@ -254,7 +254,7 @@ jobs:
           LINKS_LINE=$(echo links = \"aws_lc_fips_${VERSION//./_}\")
           grep "${LINKS_LINE}" aws-lc-fips-sys/Cargo.toml
   symbol-conflicts:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Verify prefixing
     runs-on: ubuntu-latest
     steps:
@@ -271,7 +271,7 @@ jobs:
       - name: Run assert script
         run: ./scripts/tests/prefix_test.rs
   jitter-entropy:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Verify jitter-entropy is enabled
     runs-on: ubuntu-latest
     steps:
@@ -299,7 +299,7 @@ jobs:
           LATENCY=$(./scripts/tests/first_random_byte_latency.rs)
           echo LATENCY: ${LATENCY}
   no-jitter-entropy:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Verify jitter-entropy is not enabled
     runs-on: ubuntu-latest
     env:
@@ -336,7 +336,7 @@ jobs:
           fi
 
   valgrind:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Valgrind Memory Check
     runs-on: ubuntu-latest
     env:
@@ -363,7 +363,7 @@ jobs:
             cargo test --release -p aws-lc-rs --features fips --all-targets -- --test-threads=1
 
   gnu-stack-check:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Verify (${{ matrix.host }}) GNU-stack section
     runs-on: ${{ matrix.host }}
     strategy:
@@ -415,7 +415,7 @@ jobs:
           fi
 
   docs:
-    if: github.repository_owner == 'aws'
+    if: github.repository_owner == 'johncarmack1984'
     name: Build and test documentation
     runs-on: ubuntu-latest
     steps:
