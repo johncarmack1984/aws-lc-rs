@@ -3,7 +3,8 @@
 
 // NOTE: This module is intended to produce an equivalent "libcrypto" static library to the one
 // produced by the CMake. Changes to CMake relating to compiler checks and/or special build flags
-// may require modifications to the logic in this module.
+// may require modifications to the logic in this module. The exception is an opt-in
+// `AWS_LC_SYS_UNIVERSAL_ONLY` build; see `OUTSIDE_UNIVERSAL_BINDINGS`.
 
 mod apple_aarch64;
 mod apple_x86_64;
@@ -20,10 +21,11 @@ mod win_x86_64;
 use crate::nasm_builder::NasmBuilder;
 use crate::{
     cargo_env, compiler_is_cl_like, emit_warning, env_var_to_bool, execute_command,
-    export_crate_compilers, find_clang_cl, get_crate_cc, get_crate_cflags, is_cross_compiling,
-    is_link_whole_archive, is_no_asm, is_small, out_dir, requested_c_std, set_env_for_target,
-    should_build_jitter_entropy, target, target_arch, target_env, target_is_msvc, target_os,
-    target_vendor, use_prebuilt_nasm, CStdRequested, EnvGuard, OutputLibType,
+    export_crate_compilers, find_clang_cl, get_crate_cc, get_crate_cflags, is_all_bindings,
+    is_bindgen_required, is_cross_compiling, is_link_whole_archive, is_no_asm, is_small,
+    is_universal_only, out_dir, requested_c_std, set_env_for_target, should_build_jitter_entropy,
+    target, target_arch, target_env, target_is_msvc, target_os, target_vendor, use_prebuilt_nasm,
+    CStdRequested, EnvGuard, OutputLibType,
 };
 use std::cell::Cell;
 use std::collections::HashMap;
@@ -48,9 +50,67 @@ pub(crate) struct CcBuilder {
 
 use std::fs;
 
+/// Directories of `universal::CRYPTO_LIBRARY` that the universal bindings don't
+/// reach, each with the files in it that the universal bindings still need.
+///
+/// No function in the universal bindings is defined in these sources, and none
+/// of the sources those functions reach calls into them, so no link made through
+/// the universal bindings pulls in their objects. An `AWS_LC_SYS_UNIVERSAL_ONLY`
+/// build skips them; see `builds_full_libcrypto`.
+const OUTSIDE_UNIVERSAL_BINDINGS: &[(&str, &[&str])] = &[
+    ("crypto/asn1", &["a_object.c", "posix_time.c"]),
+    ("crypto/base64", &[]),
+    ("crypto/bio", &["bio.c", "file.c", "printf.c"]),
+    ("crypto/buf", &[]),
+    ("crypto/conf", &[]),
+    ("crypto/decrepit/bio", &[]),
+    ("crypto/decrepit/dh", &[]),
+    ("crypto/decrepit/obj", &[]),
+    ("crypto/decrepit/x509", &[]),
+    ("crypto/hpke", &[]),
+    ("crypto/hrss", &[]),
+    ("crypto/ocsp", &[]),
+    ("crypto/pem", &[]),
+    ("crypto/pkcs7", &[]),
+    ("crypto/pkcs8", &[]),
+    ("crypto/pool", &[]),
+    ("crypto/siphash", &[]),
+    ("crypto/trust_token", &[]),
+    ("crypto/ui", &[]),
+    ("crypto/x509", &["i2d_pr.c"]),
+];
+
+fn is_outside_universal_bindings(source: &str) -> bool {
+    let source = Path::new(source);
+    let (Some(dir), Some(file)) = (source.parent(), source.file_name()) else {
+        return false;
+    };
+    OUTSIDE_UNIVERSAL_BINDINGS
+        .iter()
+        .any(|(skipped, kept)| dir == Path::new(skipped) && !kept.iter().any(|k| file == *k))
+}
+
+/// Whether to build all of libcrypto: unless `AWS_LC_SYS_UNIVERSAL_ONLY` asks for less,
+/// and even then when Rust can call past the universal bindings, with the complete
+/// ones or with bindings generated during the build (external bindgen covers every
+/// header).
+fn builds_full_libcrypto(universal_only: bool, bindgen_required: bool) -> bool {
+    !universal_only || bindgen_required || is_all_bindings()
+}
+
+fn universal_sources(full_libcrypto: bool) -> Vec<&'static str> {
+    universal::CRYPTO_LIBRARY
+        .iter()
+        .copied()
+        .filter(|source| full_libcrypto || !is_outside_universal_bindings(source))
+        .collect()
+}
+
 fn identify_sources() -> Vec<&'static str> {
-    let mut source_files: Vec<&'static str> = vec![];
-    source_files.append(&mut Vec::from(universal::CRYPTO_LIBRARY));
+    let mut source_files = universal_sources(builds_full_libcrypto(
+        is_universal_only(),
+        is_bindgen_required(),
+    ));
     let mut target_specific_source_found = true;
     if target_os() == "windows" {
         if target_arch() == "x86_64" {
@@ -1667,5 +1727,69 @@ mod tests {
                 ),
             ]
         );
+    }
+
+    #[test]
+    fn test_is_outside_universal_bindings() {
+        assert!(is_outside_universal_bindings("crypto/x509/x509_vfy.c"));
+        assert!(!is_outside_universal_bindings("crypto/x509/i2d_pr.c"));
+        assert!(is_outside_universal_bindings("crypto/bio/bio_mem.c"));
+        assert!(!is_outside_universal_bindings("crypto/bio/bio.c"));
+        assert!(is_outside_universal_bindings(
+            "crypto/decrepit/x509/x509_decrepit.c"
+        ));
+        assert!(!is_outside_universal_bindings(
+            "crypto/decrepit/cast/cast.c"
+        ));
+        assert!(!is_outside_universal_bindings("crypto/fipsmodule/bcm.c"));
+    }
+
+    // A rename in AWS-LC must not leave an entry that matches nothing.
+    #[test]
+    fn test_outside_universal_bindings_names_universal_sources() {
+        for (dir, kept) in OUTSIDE_UNIVERSAL_BINDINGS {
+            let sources: Vec<&Path> = universal::CRYPTO_LIBRARY
+                .iter()
+                .map(Path::new)
+                .filter(|source| source.parent() == Some(Path::new(dir)))
+                .collect();
+            assert!(!sources.is_empty(), "no universal source in {dir}");
+            for file in *kept {
+                assert!(
+                    sources.iter().any(|s| s.file_name() == Some(file.as_ref())),
+                    "{dir}/{file} is not a universal source"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_universal_sources() {
+        assert_eq!(universal_sources(true), universal::CRYPTO_LIBRARY);
+        let universal_only = universal_sources(false);
+        assert!(!universal_only.contains(&"crypto/x509/x509_vfy.c"));
+        assert!(universal_only.contains(&"crypto/x509/i2d_pr.c"));
+        assert!(universal_only.contains(&"crypto/fipsmodule/bcm.c"));
+    }
+
+    // Only an `AWS_LC_SYS_UNIVERSAL_ONLY` build with the shipped universal bindings
+    // leaves anything out.
+    #[test]
+    fn test_builds_full_libcrypto() {
+        let _lock = ENV_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        for all_bindings in [false, true] {
+            let _all_bindings = if all_bindings {
+                EnvGuard::new("CARGO_FEATURE_ALL_BINDINGS", "1")
+            } else {
+                EnvGuard::remove("CARGO_FEATURE_ALL_BINDINGS")
+            };
+            for bindgen_required in [false, true] {
+                assert!(builds_full_libcrypto(false, bindgen_required));
+                assert_eq!(
+                    builds_full_libcrypto(true, bindgen_required),
+                    all_bindings || bindgen_required
+                );
+            }
+        }
     }
 }

@@ -837,6 +837,7 @@ static mut SYS_NO_JITTER_ENTROPY: Option<bool> = None;
 static mut SYS_INCLUDES: Option<Vec<PathBuf>> = None;
 static mut SYS_SANITIZER: Option<String> = None;
 static mut SYS_LINK_WHOLE_ARCHIVE: bool = false;
+static mut SYS_UNIVERSAL_ONLY: bool = false;
 static mut SYS_STATIC: Option<bool> = None;
 static mut SYS_SYSTEM_DIR: Option<PathBuf> = None;
 static mut SYS_USE_SYSTEM: Option<bool> = None;
@@ -862,6 +863,7 @@ fn initialize() {
             optional_env_crate_target("INCLUDES").map(|v| std::env::split_paths(&v).collect());
         SYS_SANITIZER = optional_env_crate_target("SANITIZER").map(|v| v.to_lowercase());
         SYS_LINK_WHOLE_ARCHIVE = env_crate_var_to_bool("LINK_WHOLE_ARCHIVE").unwrap_or(false);
+        SYS_UNIVERSAL_ONLY = universal_only_from_env();
         SYS_STATIC = env_crate_var_to_bool("STATIC");
         SYS_SYSTEM_DIR = optional_env_crate_target("SYSTEM_DIR").map(PathBuf::from);
         SYS_USE_SYSTEM = env_crate_var_to_bool("USE_SYSTEM");
@@ -1012,6 +1014,18 @@ fn is_no_pregenerated_src() -> bool {
 /// flag does both.
 fn is_link_whole_archive() -> bool {
     unsafe { SYS_LINK_WHOLE_ARCHIVE }
+}
+
+/// Returns true when `AWS_LC_SYS_UNIVERSAL_ONLY=1` asks the cc builder to leave out
+/// the libcrypto sources that the universal bindings never reach (see
+/// `OUTSIDE_UNIVERSAL_BINDINGS` in `cc_builder`). It is opt-in because C code that
+/// links libcrypto through the `links` metadata may call them.
+fn is_universal_only() -> bool {
+    unsafe { SYS_UNIVERSAL_ONLY }
+}
+
+fn universal_only_from_env() -> bool {
+    env_crate_var_to_bool("UNIVERSAL_ONLY").unwrap_or(false)
 }
 
 fn disable_jitter_entropy() -> Option<bool> {
@@ -1863,6 +1877,43 @@ mod tests {
         assert_eq!(parse_to_bool("invalid"), None);
         assert_eq!(parse_to_bool("maybe"), None);
         assert_eq!(parse_to_bool("   "), None);
+    }
+
+    // -------------------------------------------------------------------------
+    // AWS_LC_SYS_UNIVERSAL_ONLY tests
+    // -------------------------------------------------------------------------
+
+    #[test]
+    fn test_universal_only_from_env_off_when_unset() {
+        let _lock = ENV_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _crate = EnvGuard::new("CARGO_PKG_NAME", "aws-lc-sys");
+        let _target = EnvGuard::new("TARGET", "x86_64-unknown-linux-gnu");
+        let _for_target = EnvGuard::remove("AWS_LC_SYS_UNIVERSAL_ONLY_x86_64_unknown_linux_gnu");
+        let _var = EnvGuard::remove("AWS_LC_SYS_UNIVERSAL_ONLY");
+        assert!(!universal_only_from_env());
+    }
+
+    #[test]
+    fn test_universal_only_from_env_parses_bool_values() {
+        let _lock = ENV_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _crate = EnvGuard::new("CARGO_PKG_NAME", "aws-lc-sys");
+        let _target = EnvGuard::new("TARGET", "x86_64-unknown-linux-gnu");
+        let _for_target = EnvGuard::remove("AWS_LC_SYS_UNIVERSAL_ONLY_x86_64_unknown_linux_gnu");
+        for (value, expected) in [("1", true), ("true", true), ("0", false), ("false", false)] {
+            let _var = EnvGuard::new("AWS_LC_SYS_UNIVERSAL_ONLY", value);
+            assert_eq!(universal_only_from_env(), expected, "{value}");
+        }
+    }
+
+    // The target-specific spelling wins, as for the other `AWS_LC_SYS_*` variables.
+    #[test]
+    fn test_universal_only_from_env_target_spelling_wins() {
+        let _lock = ENV_MUTEX.lock().unwrap_or_else(|e| e.into_inner());
+        let _crate = EnvGuard::new("CARGO_PKG_NAME", "aws-lc-sys");
+        let _target = EnvGuard::new("TARGET", "x86_64-unknown-linux-gnu");
+        let _var = EnvGuard::new("AWS_LC_SYS_UNIVERSAL_ONLY", "0");
+        let _for_target = EnvGuard::new("AWS_LC_SYS_UNIVERSAL_ONLY_x86_64_unknown_linux_gnu", "1");
+        assert!(universal_only_from_env());
     }
 
     // -------------------------------------------------------------------------

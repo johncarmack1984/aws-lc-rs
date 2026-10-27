@@ -72,6 +72,10 @@ jobs:
   # rustc not to enable section GC, so any unresolved symbol inside the
   # archive becomes a link error. The two settings together provide a
   # generic guarantee that every internal symbol reference resolves.
+  #
+  # On cmake=0 legs, the tests also run on the smaller archive that
+  # `AWS_LC_SYS_UNIVERSAL_ONLY` produces (see `OUTSIDE_UNIVERSAL_BINDINGS` in
+  # builder/cc_builder.rs).
   aws-lc-sys-link-test:
     if: github.repository_owner == 'aws'
     name: aws-lc-sys link tests (${{ matrix.os }} / cmake=${{ matrix.cmake }})
@@ -98,6 +102,14 @@ jobs:
         run: rustup override set ${{ steps.toolchain.outputs.name }}
       - name: Run aws-lc-sys sanity tests
         run: cargo test -p aws-lc-sys --tests
+      - name: Run aws-lc-sys sanity tests with AWS_LC_SYS_UNIVERSAL_ONLY
+        if: matrix.cmake == '0'
+        env:
+          AWS_LC_SYS_UNIVERSAL_ONLY: '1'
+        run: cargo test -p aws-lc-sys --tests --no-default-features
+      - name: Check the universal bindings against libcrypto
+        if: matrix.cmake == '0'
+        run: ./scripts/ci/check_universal_bindings_symbols.sh
 
   bindgen-test:
     if: github.repository_owner == 'aws'

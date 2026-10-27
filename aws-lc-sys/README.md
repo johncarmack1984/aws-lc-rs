@@ -289,6 +289,17 @@ Key properties:
 * **FIPS.** `aws-lc-fips-sys` never enables this automatically; it requires
   an explicit `AWS_LC_FIPS_SYS_SMALL=1`. See its README for details.
 
+## Building only what the universal bindings use
+
+Without the `all-bindings` feature, `aws-lc-sys` exposes only the universal bindings, the part of AWS-LC that aws-lc-rs calls. Set `AWS_LC_SYS_UNIVERSAL_ONLY=1` to also leave out the libcrypto sources those bindings never reach: X.509, PEM, PKCS #7 and #8, OCSP, trust tokens, HPKE, and most of ASN.1 and BIO, among others. On x86_64 Linux this cuts the build script's CPU time by 40-55%.
+
+Key properties:
+
+* **Opt-in.** Nothing changes unless it is set. `AWS_LC_SYS_UNIVERSAL_ONLY_<target>` sets it for one target, as with the other `AWS_LC_SYS_*` variables.
+* **Ignored where it can't apply.** It has no effect when `all-bindings` is on (the default feature of `aws-lc-sys`, also turned on by aws-lc-rs's `legacy-des`), when the build generates its bindings (the `bindgen` feature, `AWS_LC_SYS_EXTERNAL_BINDGEN` or `AWS_LC_SYS_NO_PREFIX`), in CMake builds, or with a system-installed AWS-LC. `aws-lc-fips-sys` always builds all of its library.
+* **Not for builds whose C code calls the skipped functions.** C code that links libcrypto through the native build metadata above, or through a `staticlib`, and calls into X.509, PEM or the other skipped parts must be built without it; s2n-tls is one such consumer. With it set, that code fails to link on undefined `aws_lc_*` symbols such as the prefixed `X509_free`.
+* **Same binaries otherwise.** Programs that call AWS-LC only through the universal bindings, as aws-lc-rs does, link the same objects with and without it.
+
 ## Build Prerequisites
 
 Since this crate builds AWS-LC as a native library, most build tools needed to build AWS-LC are applicable
